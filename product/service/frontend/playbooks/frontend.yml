@@ -1,0 +1,21 @@
+---
+
+- name: FRONTEND DEPLOYMENT
+  hosts: 
+    - cloud
+  become: yes
+
+
+  tasks:
+
+  - name: Copy Frontend
+    copy:
+      src: ../application/
+      dest: /opt/simple/frontend
+    register: frontend
+
+  - name: Run Frontend
+    command: 
+      cmd: sh /opt/simple/frontend/etc/docker-compose.sh
+      warn: no
+    when: frontend.changed

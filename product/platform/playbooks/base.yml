@@ -1,0 +1,119 @@
+---
+
+- name: BASE PROVISIONING
+  hosts: 
+    - cloud
+    - local
+  become: yes
+
+
+  tasks:
+
+  - name: Disable SELinux
+    selinux:
+      state: disabled
+    when: 
+      - ansible_distribution != "Amazon"
+
+  - name: Remove EC2-USER
+    user:
+      name: ec2-user
+      state: absent
+      remove: yes
+  
+  - name: Set Public Key for Root
+    authorized_key:
+      user: root
+      key: "{{ item }}"
+      state: present
+      exclusive: True
+    with_file:
+      - ../templates/id_rsa_simplename.pub
+
+  - name: Set Public Key for User
+    authorized_key:
+      user: "{{ ansible_user }}"
+      key: "{{ item }}"
+      state: present
+      exclusive: True
+    with_file:
+      - ../templates/id_rsa_simplename.pub
+
+  - name: Add Public Keys for User
+    authorized_key:
+      user: "{{ ansible_user }}"
+      key: "{{ item }}"
+      state: present
+    with_file:
+      - ../templates/id_rsa_simplename.pub
+      # - ../templates/id_rsa_admin.pub
+
+  - name: Set Wheel Sudoers 
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: "^%wheel"
+      line: "%wheel ALL=(ALL) NOPASSWD: ALL"
+      validate: "visudo -cf %s"
+
+  - name: Add User to Wheel
+    user:
+      name: "{{ ansible_user }}"
+      shell: /bin/bash
+      groups: wheel
+      append: yes
+
+  # - name: Remove Sudoers Include
+  #   file:
+  #     path: /etc/sudoers.d/90-cloud-init-users
+  #     state: absent
+  #   when: 
+  #     - ansible_distribution == "Amazon"
+  
+  - name: Install Base Packages
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - mc
+      - net-tools
+      - bind-utils
+      - traceroute
+      - telnet
+      - psmisc
+      - python3
+      - htop
+      - nmap
+      - mtr
+      - tree
+
+  - name: Enable Base Services
+    service: "name={{ item }} state=started enabled=yes"
+    with_items:
+      - chronyd
+
+  - name: Disable Base Services
+    service: "name={{ item }} state=stopped enabled=no"
+    with_items:
+      - rpcbind
+      - rpcbind.socket
+      - postfix
+
+  - name: Mask Base Services
+    service: "name={{ item }} masked=yes"
+    with_items:
+      - rpcbind
+
+  - name: Configure SSHd Service
+    template:
+      src: "../templates/sshd_config.{{ ansible_distribution }}.j2"
+      dest: "/etc/ssh/sshd_config"
+      owner: root
+      group: root
+      mode: 0600
+    register: sshd_config
+
+  - name: Restart SSHd Service
+    service: name=sshd state=restarted
+    when: sshd_config.changed
+

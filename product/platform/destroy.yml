@@ -1,0 +1,16 @@
+- name: SERVICES DESTROY
+  hosts: 
+    - cloud
+    - local
+  become: yes
+
+
+  tasks:
+
+  - name: Terminate Images and Containers
+    shell:
+      cmd: /usr/local/bin/docker-destroy
+
+  - name: Clean Configuration Directories
+    shell:
+      cmd: rm -rf /opt/simple/*

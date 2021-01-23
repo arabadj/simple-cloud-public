@@ -1,0 +1,57 @@
+---
+
+- name: DOCKER SETUP
+  hosts: 
+    - cloud
+    - local
+  become: yes
+
+
+  tasks:
+
+  - name: Install Docker Services
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - docker
+
+  - name: Enable Docker Service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: Install Docker Compose
+    pip:
+      name: docker-compose
+      executable: /usr/bin/pip3
+
+  - name: Add Docker-Destroy Script
+    template:
+      src: "../templates/docker-destroy.j2"
+      dest: "/usr/local/bin/docker-destroy"
+      owner: root
+      group: root
+      mode: "0755"
+
+  - name: Install EFS Utils
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - amazon-efs-utils
+    when: 
+      - ansible_distribution == "Amazon"
+
+  - name: Mount EFS Target
+    mount:
+      path: /opt/simple/
+      src: efs-simple.simplename.tk:/
+      fstype: nfs
+      opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+      state: mounted
+      # state: absent
+    when: 
+      - ansible_distribution == "Amazon"
+    

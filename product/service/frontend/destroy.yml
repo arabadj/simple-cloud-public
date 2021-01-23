@@ -1,0 +1,15 @@
+- name: FRONTEND DESTROY
+  hosts: 
+    - cloud
+  become: yes
+
+
+  tasks:
+
+  - name: Terminate Frontend
+    shell:
+      cmd: sh /opt/simple/frontend/etc/docker-destroy.sh
+
+  - name: Remove Frontend
+    shell:
+      cmd: rm -rf /opt/simple/frontend

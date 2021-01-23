@@ -1,0 +1,21 @@
+---
+
+- name: BASIC DEPLOYMENT
+  hosts: 
+    - local
+  become: yes
+
+
+  tasks:
+
+  - name: Copy Basic
+    copy:
+      src: ../application/
+      dest: /opt/simple/basic
+    register: basic
+
+  - name: Run Basic
+    command: 
+      cmd: sh /opt/simple/basic/etc/docker-compose.sh
+      warn: no
+    when: basic.changed

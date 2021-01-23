@@ -1,0 +1,20 @@
+#cloud-config
+
+bootcmd:
+  - setenforce 0
+  - amazon-linux-extras install epel -y
+  
+
+disable_root: false
+
+users:
+  - name: root
+    ssh_authorized_keys: ${key_value}
+  - name: ${user_name}
+    ssh_authorized_keys: ${key_value} 
+    sudo: ALL=(ALL) NOPASSWD:ALL
+
+# runcmd:
+#   - /usr/sbin/userdel -r -f ec2-user
+
+timezone: Asia/Yerevan

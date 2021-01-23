@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+
+  rsys_srv:
+    build: /opt/simple/logger/etc/rsys_srv
+    image: rsys_srv
+    restart: always
+    volumes:
+      - /opt/simple/logger/var/log/remote:/var/log/remote
+    ports:
+      - '514:514/tcp'
+      - '514:514/udp'

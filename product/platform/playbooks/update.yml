@@ -1,0 +1,23 @@
+---
+
+- name: UPDATE SYSTEMS
+  hosts: 
+    - cloud
+  become: yes
+
+
+  tasks:
+
+  - name: Update System
+    yum:
+      name: "*"
+      state: latest
+      update_cache: yes
+    register: update_system
+
+  - name: Autoremove
+    command: 
+      cmd: yum autoremove -y
+      warn: no
+    when: update_system.changed
+

@@ -1,0 +1,21 @@
+---
+
+- name: LOGGER DEPLOYMENT
+  hosts: 
+    - cloud
+  become: yes
+
+
+  tasks:
+
+  - name: Copy Logger
+    copy:
+      src: ../application/
+      dest: /opt/simple/logger
+    register: logger
+
+  - name: Run Logger
+    command: 
+      cmd: sh /opt/simple/logger/etc/docker-compose.sh
+      warn: no
+    when: logger.changed

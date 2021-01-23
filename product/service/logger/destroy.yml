@@ -1,0 +1,15 @@
+- name: LOGGER DESTROY
+  hosts: 
+    - cloud
+  become: yes
+
+
+  tasks:
+
+  - name: Terminate Logger
+    shell:
+      cmd: sh /opt/simple/logger/etc/docker-destroy.sh
+
+  - name: Remove Logger
+    shell:
+      cmd: rm -rf /opt/simple/logger

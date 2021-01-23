@@ -1,0 +1,25 @@
+---
+
+- name: INFORMATION
+  hosts: all
+  become: yes
+
+
+  tasks:
+
+    - debug:
+        msg: 
+          - "Hostname:      {{ ansible_hostname }}"
+          - "Distribution:  {{ ansible_distribution }}"
+          - "Version:       {{ ansible_distribution_version }}"
+          - "Interface:     {{ ansible_default_ipv4.interface }}"
+          - "Address:       {{ ansible_default_ipv4.address }}"
+      when: 
+        # - ansible_distribution != "CentOS" and ansible_distribution != "OracleLinux"
+        # - ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux"
+        # - ansible_distribution == "CentOS"
+        # - ansible_distribution == "OracleLinux"
+        # - ansible_distribution == "Ubuntu"
+        # - ansible_distribution_version < '7'
+        # - ansible_distribution_major_version == '6'
+        # - ansible_default_ipv4.address is match("10.0.51.*")

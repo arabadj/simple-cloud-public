@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+
+  # web_centos:
+  #   build: /opt/simple/basic/etc/web_centos
+  #   image: web_centos
+  #   restart: always
+  #   ports:
+  #     - '81:80'
+  #   volumes:
+  #     - /opt/simple/basic/var:/var/www/html
+
+  web_ubuntu:
+    build: /opt/simple/basic/etc/web_ubuntu
+    image: web_ubuntu
+    restart: always
+    ports:
+      - '80:80'
+    volumes:
+      - /opt/simple/basic/var:/var/www/html
